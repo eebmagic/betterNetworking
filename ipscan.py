@@ -7,8 +7,7 @@ from pathlib import Path
 ########################################################
 ### SETTINGS ###
 user_PATH = str(Path.home())
-JSON_PATH = user_PATH + "/pythonTools/netcheck/sources/data.json"
-SHELL_PATH = user_PATH + "/pythonTools/netcheck/sources/shellPaths.json"
+JSON_PATH = user_PATH + "/pythonTools/betterNetworking/sources/data.json"
 ########################################################
 
 ########################################################
