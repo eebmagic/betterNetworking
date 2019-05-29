@@ -8,7 +8,7 @@ if len(sys.argv) < 3:
 	quit("Not enough input:\n\tsend filepath destination")
 
 user_PATH = str(Path.home())
-JSON_PATH = user_PATH + "/pythonTools/netcheck/sources/data.json"
+JSON_PATH = user_PATH + "/pythonTools/betterNetworking/sources/data.json"
 
 with open(JSON_PATH) as file:
 	currentIpData = json.load(file)

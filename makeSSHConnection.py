@@ -7,7 +7,7 @@ from subprocess import check_call, DEVNULL, STDOUT
 # print(sys.argv)
 
 user_PATH = str(Path.home())
-JSON_PATH = user_PATH + "/pythonTools/netcheck/sources/data.json"
+JSON_PATH = user_PATH + "/pythonTools/betterNetworking/sources/data.json"
 
 ### Load ip dictionary ###
 with open(JSON_PATH) as file:
