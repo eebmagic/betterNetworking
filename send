@@ -9,12 +9,17 @@ from subprocess import check_call, DEVNULL, STDOUT
 if len(sys.argv) < 3:
 	quit("Not enough input:\n\tsend filepath destination")
 
-user_PATH = str(Path.home())
-JSON_PATH = user_PATH + "/pythonTools/betterNetworking/sources/data.json"
+
+## Load json data ##
+pathname = os.path.dirname(sys.argv[0])
+containerPATH = os.path.abspath(pathname)
+JSON_PATH = containerPATH + "/sources/data.json"
 
 with open(JSON_PATH) as file:
 	currentIpData = json.load(file)
 
+
+## Input collection ##
 if 'to' in sys.argv:
 	sys.argv.remove('to')
 
