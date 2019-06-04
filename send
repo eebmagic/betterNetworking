@@ -36,12 +36,10 @@ if destination in currentIpData:
 	if response == 0:
 		print("Sending...")
 	else:
-		quit(f"###ERROR: Connection to {destination} at {currentIpData[destination]['ip']} failed.")
+		quit("###ERROR: Connection to " + destination + " at " + currentIpData[destination]['ip'] + " failed.")
 
 	### RUN SCP COMMAND ###
 	sendCommand = "scp -r '" + file_to_send + "' " + currentIpData[destination]['user'] + "@" + currentIpData[destination]["ip"] + ":" + currentIpData[destination]['folder']
-
-	# print(f"SCP COMMAND: {sendCommand}")
 	os.system(sendCommand)
 
 elif destination == 'google':

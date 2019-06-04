@@ -29,13 +29,10 @@ if destination in currentIpData:
 	if response == 0:
 		print("Sending...")
 	else:
-		quit(f"###ERROR: Connection to {destination} ({currentIpData[destination]['user']}@{currentIpData[destination]['ip']}) has failed.")
+		quit("###ERROR: Connection to " + destination + " (" + currentIpData[destination]['user'] + "@" + currentIpData[destination]['ip'] + ") has failed.")
 
 	### RUN SSH COMMAND ###
 	sendCommand = "ssh " + currentIpData[destination]['user'] + "@" + currentIpData[destination]["ip"]
-	
-	# print(f"Command to connect: {sendCommand}")
-	
 	os.system(sendCommand)
 
 

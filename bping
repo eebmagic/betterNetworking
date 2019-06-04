@@ -18,12 +18,10 @@ if len(sys.argv) > 1:
 			command = "ping " + DATA[sys.argv[1]]["ip"]
 		elif len(sys.argv) > 2:
 			command = "ping " + DATA[sys.argv[1]]["ip"] + ' ' + ' '.join(sys.argv[2:])
-		# print(command)
 		os.system(command)
 
 	else:
 		command = "ping " + ' '.join(sys.argv[1:])
-		# print(command)
 		os.system(command)
 
 else:

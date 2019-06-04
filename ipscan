@@ -18,9 +18,7 @@ JSON_PATH = containerPATH + "/sources/data.json"
 #Reject illegitimate options
 commandOptions = ['-h', '--help', '--witharp', '--update', '--add', '--remove']
 if len(sys.argv[:]) > 1 and sys.argv[1] and sys.argv[1] not in commandOptions:
-    print(f"no such option: '{sys.argv[1]}'\n\trun ipscan --help to see all options")
-    # print(f"len of sys.argv: {len(sys.argv[:])}")		#Debugging
-    # print(f"sys.argv[1]: {sys.argv[1]}")				#Debugging
+    print("no such option: '" + sys.argv[1] + "'\n\trun ipscan --help to see all options")
     quit()
 
 if '--help' in sys.argv[:] or '-h' in sys.argv[:]:
@@ -52,7 +50,7 @@ if '--add' in sys.argv[:]:
     #Default username and target direcotry
     back = user_PATH[::-1]
     currentUser = back[:back.index('/')][::-1]
-    user_mainUserAccount = input(f"What should be the main account used for ssh/scp? (Default: {currentUser}): ").strip()
+    user_mainUserAccount = input("What should be the main account used for ssh/scp? (Default: " + currentUser + "): ").strip()
     if user_mainUserAccount == '':
     	user_mainUserAccount = currentUser
 
@@ -163,7 +161,7 @@ for row in rows:
 	if getMAC(row):
 		arpMac_ips[getMAC(row)] = getIP(row)
 		if witharp:
-			print(f"{getMAC(row) + ' '*(17 - len(getMAC(row)))}  |  {getIP(row)}")  #Print all collected arp data
+			print(getMAC(row) + ' '*(17 - len(getMAC(row))) + "  |  " + getIP(row))  #Print all collected arp data
 
 #Compare record with arp data
 for name, data in oldData.items():
@@ -208,7 +206,7 @@ for name, data in sorted(currentData.items()):
 		device_ip = oldData[name]['ip'] + ' ' * (12 - len(data['ip']))
 		dataToWrite = {'mac':data['mac'], 'ip':oldData[name]['ip']}
 
-	print(f"{device_name}| {device_mac} |  {device_ip}  | {device_connect}")
+	print(device_name + "| " + device_mac + " |  " + device_ip + "  | " + device_connect)
 
 	finalData[name] = dataToWrite
 	finalData[name]['user'] = oldData[name]['user']
