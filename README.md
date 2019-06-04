@@ -2,4 +2,5 @@
 Python scripts that use a .json file of all your computers to make ssh, scp, and arp easier to use without memorizing IP addresses
 
 ## Usage
-I would recomend making aliases to each of the .py files for easy use. Additionally you'll have to edit the JSON_PATH variable in each script to point to the desired location for your file.
+The path to the folder of these scripts can be added to your path.
+Alternatively you could make aliases to each of the .py scripts.
