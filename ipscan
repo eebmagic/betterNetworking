@@ -48,8 +48,8 @@ if '--add' in sys.argv[:]:
     user_newMAC = input("What is the MAC address of the new comptuer?: ").strip()
 
     #Default username and target direcotry
-    back = user_PATH[::-1]
-    currentUser = back[:back.index('/')][::-1]
+    import getpass
+    currentUser = getpass.getuser()
     user_mainUserAccount = input("What should be the main account used for ssh/scp? (Default: " + currentUser + "): ").strip()
     if user_mainUserAccount == '':
     	user_mainUserAccount = currentUser
