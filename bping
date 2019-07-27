@@ -3,7 +3,7 @@ import os
 import sys
 import json
 
-## Load json data ##
+# Load json data #
 pathname = os.path.dirname(sys.argv[0])
 containerPATH = os.path.abspath(pathname)
 JSON_PATH = containerPATH + "/sources/data.json"

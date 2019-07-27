@@ -6,120 +6,121 @@ import json
 import sys
 from pathlib import Path
 
-## Json data ##
+# Json data #
 pathname = os.path.dirname(sys.argv[0])
 containerPATH = os.path.abspath(pathname)
 JSON_PATH = containerPATH + "/sources/data.json"
 
 
 ########################################################
-######### OPTION HANDLING ########
+# OPTION HANDLING #
 
-#Reject illegitimate options
+# Reject illegitimate options
 commandOptions = ['-h', '--help', '--witharp', '--update', '--add', '--remove']
 if len(sys.argv[:]) > 1 and sys.argv[1] and sys.argv[1] not in commandOptions:
-    print("no such option: '" + sys.argv[1] + "'\n\trun ipscan --help to see all options")
-    quit()
+	print("no such option: '" + sys.argv[1] + "'\n\trun ipscan --help to see all options")
+	quit()
 
 if '--help' in sys.argv[:] or '-h' in sys.argv[:]:
 	print("""
 Options:
-  -h, --help    	show this page
-  
-  --witharp 	print all the mac and ip gathered
-  
-  --add         add a computer by MAC address to list of computers to check for
-  --remove      remove a computer by name from list of computers to check
+	-h, --help		show this page
+
+	--witharp 	print all the mac and ip gathered
+
+	--add	add a computer by MAC address to list of computers to check for
+	--remove      remove a computer by name from list of computers to check
 	""")
 	quit()
 
 
 if '--witharp' in sys.argv[:]:
-    witharp = True
+	witharp = True
 else:
-    witharp = False
+	witharp = False
 
 if '--add' in sys.argv[:]:
-    with open(JSON_PATH) as file:
-        currentData = json.load(file)
+	with open(JSON_PATH) as file:
+		currentData = json.load(file)
 
-    #Name and MAC address
-    user_newName = input("What is the name of the new comptuer?: ").strip()
-    user_newMAC = input("What is the MAC address of the new comptuer?: ").strip()
+	# Name and MAC address
+	user_newName = input("What is the name of the new comptuer?: ").strip()
+	user_newMAC = input("What is the MAC address of the new comptuer?: ").strip()
 
-    #Default username and target direcotry
-    import getpass
-    currentUser = getpass.getuser()
-    user_mainUserAccount = input("What should be the main account used for ssh/scp? (Default: " + currentUser + "): ").strip()
-    if user_mainUserAccount == '':
-    	user_mainUserAccount = currentUser
+	# Default username and target direcotry
+	import getpass
+	currentUser = getpass.getuser()
+	user_mainUserAccount = input("What should be the main account used for ssh/scp? (Default: " + currentUser + "): ").strip()
+	if user_mainUserAccount == '':
+		user_mainUserAccount = currentUser
 
-    user_defaultDirectory = input("What directory to scp to?(Default: ~/Downloads/): ").strip()
-    if user_defaultDirectory == '':
-    	user_defaultDirectory = "~/Downloads/"
+	user_defaultDirectory = input("What directory to scp to?(Default: ~/Downloads/): ").strip()
+	if user_defaultDirectory == '':
+		user_defaultDirectory = "~/Downloads/"
 
+	currentData[user_newName] = {'mac': user_newMAC, 'ip': "None", 'user': user_mainUserAccount, 'folder': user_defaultDirectory}
 
-    currentData[user_newName] = {'mac':user_newMAC, 'ip':"None", 'user':user_mainUserAccount, 'folder':user_defaultDirectory}
+	with open(JSON_PATH, 'w') as file:
+		json.dump(currentData, file)
 
-    with open(JSON_PATH, 'w') as file:
-        json.dump(currentData, file)
-
-    quit()
+	quit()
 
 if '--remove' in sys.argv[:]:
-    with open(JSON_PATH) as file:
-        currentData = json.load(file)
+	with open(JSON_PATH) as file:
+		currentData = json.load(file)
 
-    print('\n\t' + '\n\t'.join(currentData) + '\n')
+	print('\n\t' + '\n\t'.join(currentData) + '\n')
 
-    userRemove = ""
-    while userRemove not in currentData:
-        userRemove = input("Which computer do you want to remove?: ").strip()
-        if userRemove not in currentData:
-            print("Your entry is not in the list.")
+	userRemove = ""
+	while userRemove not in currentData:
+		userRemove = input("Which computer do you want to remove?: ").strip()
+		if userRemove not in currentData:
+			print("Your entry is not in the list.")
 
-    del currentData[userRemove]
+	del currentData[userRemove]
 
-    with open(JSON_PATH, 'w') as file:
-        json.dump(currentData, file)
-        quit("File has been updated.")
-
-########################################################
-
+	with open(JSON_PATH, 'w') as file:
+		json.dump(currentData, file)
+		quit("File has been updated.")
 
 ########################################################
-######## FUNCTIONS ########
 
-#Gets the current computer LAN IP regardless of OS
+
+########################################################
+# FUNCTIONS #
+
+# Gets the current computer LAN IP regardless of OS
 def myLanIP():
 	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	s.connect(("8.8.8.8", 80))
 	return s.getsockname()[0]
 	s.close()
 
-#Returns text bound by parenthesis in a line
+
+# Returns text bound by parenthesis in a line
 def getIP(inputString):
 	output = ""
 	start, end = 0, 0
 	for i, char in enumerate(inputString):
 		if char == '(' and start == 0:
-			start = i+1
+			start = i + 1
 		if char == ')' and end == 0:
 			end = i
 	output = inputString[start:end]
 	return output
 
-#Returns the mac address in the line
+
+# Returns the mac address in the line
 def getMAC(inputString):
 	try:
 		firstColon = inputString.index(':')
 	except ValueError:
 		return None
-	start = inputString[firstColon-2:].strip()
+	start = inputString[firstColon - 2:].strip()
 
 	rawMAC = start[:start.index(' ')]
 
-	#Correct spacing issue
+	# Correct spacing issue
 	pairList = rawMAC.split(':')
 	for i, pair in enumerate(pairList):
 		if len(pair) < 2:
@@ -132,79 +133,80 @@ def getMAC(inputString):
 
 
 ########################################################
-######## MAIN LOOP ########
+# # # MAIN LOOP # # #
 
-### Load original data dictionary ###
+# Load original data dictionary #
 with open(JSON_PATH) as file:
 	oldData = json.load(file)
 
 currentData = dict(oldData)
 
-### Get arp data ###
+# Get arp data #
 output = os.popen("arp -a").read()
 rows = output.split('\n')
 try:
 	rows.remove('')
-except:
+except ValueError:
 	pass
 
-###### THIS DEVICE INFO ######
-### Get ifconfig for mac for this device ###
+# # THIS DEVICE INFO # #
+# Get ifconfig for mac for this device #
 ifconfigData = os.popen('ifconfig').read()
 thisDevice = ''
 
 
-##### SCAN DATA #####
-#Get macs and ips from arp data
+# # SCAN DATA # #
+# Get macs and ips from arp data
 arpMac_ips = {}
 for row in rows:
 	if getMAC(row):
 		arpMac_ips[getMAC(row)] = getIP(row)
 		if witharp:
-			print(getMAC(row) + ' '*(17 - len(getMAC(row))) + "  |  " + getIP(row))  #Print all collected arp data
+			print(getMAC(row) + ' ' * (17 - len(getMAC(row))) + "  |  " + getIP(row))  # Print all collected arp data
 
-#Compare record with arp data
+# Compare record with arp data
 for name, data in oldData.items():
-	#Check in arp data
+	# Check in arp data
 	if data['mac'] in arpMac_ips:
-		currentData[name]['ip'] = arpMac_ips[data['mac']]	#Update ip in new Data
-		currentData[name]['connection'] = True				#Update connection status
+		# Update ip in new Data
+		currentData[name]['ip'] = arpMac_ips[data['mac']]
+
+		# Update connection status
+		currentData[name]['connection'] = True
 		if data['mac'] in ifconfigData:
 			thisDevice = name
 
-	#Check in ifconfig 
+	# Check in ifconfig
 	elif data['mac'] in ifconfigData:
 		thisDevice = name
 		currentData[name]['ip'] = myLanIP()
-		currentData[name]['connection'] = True 
+		currentData[name]['connection'] = True
 	else:
 		currentData[name]['connection'] = False
 
+################################################
+# #  CLOSING  (Export and output) # #
+################################################
 
-
-#########################################################################################################
-##### CLOSING  (Export and output) #####
-#########################################################################################################
-
-### Print to user ###
+# Print to user #
 print("\nOUTPUT:")
 finalData = {}
 for name, data in sorted(currentData.items()):
 	device_name = name + ' ' * (7 - len(name))
-	device_mac = data['mac']  + ' ' * (17 - len(data['mac']))
-	
-	if data['connection'] and name != thisDevice: 
+	device_mac = data['mac'] + ' ' * (17 - len(data['mac']))
+
+	if data['connection'] and name != thisDevice:
 		device_connect = "ON"
 		device_ip = data['ip'] + ' ' * (12 - len(data['ip']))
-		dataToWrite = {'mac':data['mac'], 'ip':data['ip']}
+		dataToWrite = {'mac': data['mac'], 'ip': data['ip']}
 	elif name == thisDevice:
 		device_connect = "THIS DEVICE"
 		device_ip = data['ip'] + ' ' * (12 - len(data['ip']))
-		dataToWrite = {'mac':data['mac'], 'ip':data['ip']}
-	else: 
+		dataToWrite = {'mac': data['mac'], 'ip': data['ip']}
+	else:
 		device_connect = "Not Detected (Last IP)"
 		device_ip = oldData[name]['ip'] + ' ' * (12 - len(data['ip']))
-		dataToWrite = {'mac':data['mac'], 'ip':oldData[name]['ip']}
+		dataToWrite = {'mac': data['mac'], 'ip': oldData[name]['ip']}
 
 	print(device_name + "| " + device_mac + " |  " + device_ip + "  | " + device_connect)
 
@@ -213,10 +215,6 @@ for name, data in sorted(currentData.items()):
 	finalData[name]['folder'] = oldData[name]['folder']
 print("")
 
-### Export to save file ###
+# Export to save file #
 with open(JSON_PATH, 'w') as file:
 	json.dump(finalData, file)
-
-
-
-
