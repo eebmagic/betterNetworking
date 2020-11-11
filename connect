@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 
-import json
+import yaml
 from pathlib import Path
 import os
 import sys
 from subprocess import check_call, DEVNULL, STDOUT
 
-# Load json data #
+# Load yaml data #
 pathname = os.path.dirname(sys.argv[0])
 containerPATH = os.path.abspath(pathname)
-JSON_PATH = containerPATH + "/sources/data.json"
+YAML_PATH = containerPATH + "/sources/data.yml"
 
-with open(JSON_PATH) as file:
-	currentIpData = json.load(file)
-
+with open(YAML_PATH, 'r') as file:
+	try:
+		currentIpData = yaml.safe_load(file)
+	except yaml.YAMLError as error:
+		print(error)
+		quit()
 
 if len(sys.argv) < 2:
 	sys.argv.append('NONE')
