@@ -18,7 +18,8 @@ JSON_PATH = containerPATH + "/sources/data.json"
 # Reject illegitimate options
 commandOptions = ['-h', '--help', '--witharp', '--update', '--add', '--remove']
 if len(sys.argv[:]) > 1 and sys.argv[1] and sys.argv[1] not in commandOptions:
-	print("no such option: '" + sys.argv[1] + "'\n\trun ipscan --help to see all options")
+	print("no such option: '" + sys.argv[1] + "'")
+	print("\trun ipscan --help to see all options")
 	quit()
 
 if '--help' in sys.argv[:] or '-h' in sys.argv[:]:
@@ -50,15 +51,23 @@ if '--add' in sys.argv[:]:
 	# Default username and target direcotry
 	import getpass
 	currentUser = getpass.getuser()
-	user_mainUserAccount = input("What should be the main account used for ssh/scp? (Default: " + currentUser + "): ").strip()
+	Question = "What should be the main account used for ssh/scp? "
+	End = "(Default: " + currentUser + "): "
+	user_mainUserAccount = input(Question + End).strip()
 	if user_mainUserAccount == '':
 		user_mainUserAccount = currentUser
 
-	user_defaultDirectory = input("What directory to scp to?(Default: ~/Downloads/): ").strip()
+	Question = "What directory to scp to?(Default: ~/Downloads/): "
+	user_defaultDirectory = input(Question).strip()
 	if user_defaultDirectory == '':
 		user_defaultDirectory = "~/Downloads/"
 
-	currentData[user_newName] = {'mac': user_newMAC, 'ip': "None", 'user': user_mainUserAccount, 'folder': user_defaultDirectory}
+	currentData[user_newName] = {
+		'mac': user_newMAC,
+		'ip': "None",
+		'user': user_mainUserAccount,
+		'folder': user_defaultDirectory
+	}
 
 	with open(JSON_PATH, 'w') as file:
 		json.dump(currentData, file)
@@ -162,7 +171,8 @@ for row in rows:
 	if getMAC(row):
 		arpMac_ips[getMAC(row)] = getIP(row)
 		if witharp:
-			print(getMAC(row) + ' ' * (17 - len(getMAC(row))) + "  |  " + getIP(row))  # Print all collected arp data
+			# Print all collected arp data
+			print(getMAC(row) + ' ' * (17 - len(getMAC(row))) + "  |  " + getIP(row))
 
 # Compare record with arp data
 for name, data in oldData.items():

@@ -5,12 +5,13 @@ from pathlib import Path
 import sys
 import os
 from subprocess import check_call, DEVNULL, STDOUT
+import subprocess
 
 if len(sys.argv) < 3:
 	quit("Not enough input:\n\tsend filepath destination")
 
 
-## Load json data ##
+# Load json data #
 pathname = os.path.dirname(sys.argv[0])
 containerPATH = os.path.abspath(pathname)
 JSON_PATH = containerPATH + "/sources/data.json"
@@ -19,7 +20,7 @@ with open(JSON_PATH) as file:
 	currentIpData = json.load(file)
 
 
-## Input collection ##
+# Input collection #
 if 'to' in sys.argv:
 	sys.argv.remove('to')
 
@@ -28,25 +29,41 @@ destination = sys.argv[2]
 
 
 if destination in currentIpData:
-	### Ping to test connction ###
+	# Ping to test connction #
 	try:
-		response = check_call(['ping', '-c', '1', currentIpData[destination]['ip']], stdout=DEVNULL, stderr=STDOUT)
-	except:
+		response = check_call(
+			['ping', '-c', '1', currentIpData[destination]['ip']],
+			stdout=DEVNULL,
+			stderr=STDOUT
+		)
+	except subprocess.CalledProcessError:
 		response = 1
 	if response == 0:
 		print("Sending...")
 	else:
 		quit("###ERROR: Connection to " + destination + " at " + currentIpData[destination]['ip'] + " failed.")
 
-	### RUN SCP COMMAND ###
+	# RUN SCP COMMAND #
 	sendCommand = "scp -r '" + file_to_send + "' " + currentIpData[destination]['user'] + "@" + currentIpData[destination]["ip"] + ":" + currentIpData[destination]['folder']
 	os.system(sendCommand)
 
 elif destination == 'google':
-    sendCommand = "rclone copy " + file_to_send + " Drive:/fromRclone/"
-    os.system(sendCommand)
+	if file_to_send == '.':
+		out_name = os.popen("pwd").read().strip().split('/')[-1]
+	else:
+		out_name = file_to_send
+	
+	confirmation = str(input("file name in Drive should be: '" + out_name + "' [Y/n]? ")).strip()
+	if confirmation.lower() == 'y' or len(confirmation) == 0:
+		pass
+	else:
+		out_name = str(input("enter the final name in Drive: ")).strip()
+
+	sendCommand = "rclone copy " + file_to_send + " Drive:/fromRclone/" + out_name
+	os.system(sendCommand)
 
 else:
 	print("###ERROR: Desination not found")
-	print("Desination options are: \n\t\t\t" + '\n\t\t\t'.join(currentIpData) + '\n\t\t\tgoogle')
+	print("Desination options are: \n\t\t\t" + '\n\t\t\t'.join(currentIpData))
+	print('\t\t\tgoogle')
 	quit("")
